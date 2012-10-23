@@ -1,0 +1,41 @@
+########################
+# Eclipse files
+########################
+*.pydevproject
+.metadata
+bin/**
+tmp/**
+tmp/**/*
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.settings/
+.loadpath
+.project
+.classpath
+
+# External tool builders
+.externalToolBuilders/
+
+# Locally stored "Eclipse launch configurations"
+*.launch
+
+# CDT-specific
+.cproject
+
+# PDT-specific
+.buildpath
+
+
+#########################
+# Project specific
+#########################
+
+# Build path created by build script
+build/
+
+# Allow lib dir but not the contents, as they are dependent on WSN-BPF
+lib/*
+
