@@ -10,19 +10,19 @@ public class Logger implements BPFLogger {
 	}
 	
 	public String debug(String TAG, String text) {
-		return log(String.format("[DEBUG] {0}:{1}", TAG, text));
+		return log("[DEBUG] " + TAG + ": " + text);
 	}
 
 	public String error(String TAG, String text) {
-		return log(String.format("[ERROR] {0}:{1}", TAG, text));
+		return log("[ERROR] " + TAG + ": " + text);
 	}
 
 	public String info(String TAG, String text) {
-		return log(String.format("[INFO] {0}:{1}", TAG, text));
+		return log("[INFO] " + TAG + ": " + text);
 	}
 
 	public String warning(String TAG, String text) {
-		return log(String.format("[WARN] {0}:{1}", TAG, text));
+		return log("[WARN] " + TAG + ": " + text);
 	}
 	
 }
