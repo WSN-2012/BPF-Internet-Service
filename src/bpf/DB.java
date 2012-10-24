@@ -90,6 +90,21 @@ public class DB implements BPFDB {
 		return result.toString();
 	}
 	
+	private String getUpdateStringFromMap(Map<String, Object> map) {
+		StringBuilder result = new StringBuilder(100);
+		int c = 0;
+		for (Map.Entry<String, Object> item : map.entrySet()) {
+			if (c < map.size()) {
+				result.append(item.getKey() + "='" + item.getValue() + "', ");
+			} else {
+				result.append(item.getKey() + "='" + item.getValue() + "'");
+			}
+			c++;
+		}
+		
+		return result.toString();
+	}
+	
 	/* *************************** */
 	
 	public void close() {
@@ -119,10 +134,8 @@ public class DB implements BPFDB {
 
 			return statement.executeUpdate();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw new BPFDBException("Couldn't delete, there was an SQLException: " + e.getMessage());
 		}
-		
-		return 0;
 	}
 
 	public void execSQL(String sql) throws BPFDBException {
@@ -188,7 +201,7 @@ public class DB implements BPFDB {
 		// Add the where selection but not they arguments quite yet (prepared statement will do this)
 		if (selection != null && !selection.isEmpty()) {
 			sql.append(" WHERE");
-			sql.append(selection.substring(0, selection.length() - 1));
+			sql.append(selection);
 		}
 		
 		// Group by the specified argument (if spcified)
@@ -219,6 +232,16 @@ public class DB implements BPFDB {
 		ResultSet result;
 		try {
 			statement = connection.prepareStatement(sql.toString());
+
+			// Add all the selection args
+			if (selection != null && !selection.isEmpty()) {
+				for (int i = 0; i < selectionArgs.length; i++) {
+					statement.setString(i + 1, selectionArgs[i]);
+				}
+			}
+			
+			logger.debug(TAG, "Query SQL: " + statement);
+			
 			result = statement.getResultSet();
 			if (result == null) {
 				throw new BPFDBException("The result was null when querying the database");
@@ -232,6 +255,42 @@ public class DB implements BPFDB {
 
 	public int update(String table, Map<String, Object> values, String where,
 			String[] whereArgs) throws BPFDBException {
-		return 0;
+		
+		// Error check
+		if (table == null || table.isEmpty()) {
+			throw new BPFDBException("The table was null or empty, cannot do this");
+		}
+		
+		PreparedStatement statement = null; 
+		StringBuffer sql = new StringBuffer(150);
+		
+		// Start building the sql
+		sql.append("UPDATE " + table + " SET");
+		
+		// Add the update values
+		sql.append(getUpdateStringFromMap(values));
+		
+		// Add the where statement (if specified)
+		if (where != null && !where.isEmpty()) {
+			sql.append(" WHERE ");
+			sql.append(where);
+		}
+		
+		try {
+			statement = connection.prepareStatement(sql.toString());
+			
+			if (where != null && !where.isEmpty()) {
+				for (int i=0; i < whereArgs.length; i++) {
+					statement.setString(i + 1, whereArgs[i]);
+				}
+			}
+			logger.debug(TAG, "Updating with SQL: " + statement);
+
+			return statement.executeUpdate();
+		} catch (SQLException e) {
+			throw new BPFDBException(
+					"Couldn't update table, since there was an SQLException: "
+							+ e.getMessage());
+		}
 	}
 }
