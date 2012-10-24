@@ -11,8 +11,8 @@ public class ActionReceiver implements BPFActionReceiver {
 	private Logger logger;
 	
 	
-	public ActionReceiver(Logger _logger) {
-		logger = _logger;
+	public ActionReceiver(Logger logger) {
+		this.logger = logger;
 	}
 	
 	public void bundleReceived(Bundle bundle) {

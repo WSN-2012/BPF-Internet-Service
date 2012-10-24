@@ -1,19 +1,17 @@
 package bpf;
 
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Iterator;
 import java.util.Map;
 
 import se.kth.ssvl.tslab.wsn.general.bpf.BPFDB;
 import se.kth.ssvl.tslab.wsn.general.bpf.exceptions.BPFDBException;
-import se.kth.ssvl.tslab.wsn.general.servlib.bundling.ForwardingInfo.state_t;
 
 public class DB implements BPFDB {
 
@@ -22,9 +20,14 @@ public class DB implements BPFDB {
 	private Connection connection = null;
 	private Logger logger;
 	
-	public DB(File dbFile, Logger _logger) throws FileNotFoundException {
+	public DB(File dbFile, Logger logger) {
+		// Create the file if it doesn't exist
 		if (!dbFile.exists()) {
-			throw new FileNotFoundException();
+			try {
+				dbFile.createNewFile();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 		
 		// Continue to load the SQLite driver
@@ -41,7 +44,7 @@ public class DB implements BPFDB {
 		}
 	    
 	    // Init the logger
-	    logger = _logger;
+	    this.logger = logger;
 	    logger.debug(TAG, "The DB class has been initialized properly");
 	}
 
