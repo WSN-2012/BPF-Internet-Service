@@ -13,6 +13,7 @@ import java.util.Map;
 
 import se.kth.ssvl.tslab.wsn.general.bpf.BPFDB;
 import se.kth.ssvl.tslab.wsn.general.bpf.exceptions.BPFDBException;
+import se.kth.ssvl.tslab.wsn.general.servlib.bundling.ForwardingInfo.state_t;
 
 public class DB implements BPFDB {
 
@@ -45,34 +46,49 @@ public class DB implements BPFDB {
 	}
 
 	
-	private String getSQLFromMapKey(Map<String, Object> map) {
-		StringBuilder sql = new StringBuilder(100);
+	private String getCommaFromKey(Map<String, Object> map) {
+		StringBuilder result = new StringBuilder(100);
 		int c = 0;
 		for (String key : map.keySet()) {
 			if (c < map.size()) {
-				sql.append(String.format("{0}, ", key));
+				result.append(key + ", ");
 			} else {
-				sql.append(String.format("{0}", key));
+				result.append(key);
 			}
+			c++;
 		}
 		
-		return sql.toString();
+		return result.toString();
 	}
 	
-	private String getSQLFromMapValue(Map<String, Object> map) {
-		StringBuilder sql = new StringBuilder(100);
+	private String getCommaFromValue(Map<String, Object> map) {
+		StringBuilder result = new StringBuilder(100);
 		int c = 0;
 		for (Object value : map.values()) {
 			if (c < map.size()) {
-				sql.append(String.format("{0}, ", value.toString()));
+				result.append(value.toString() + ", ");
 			} else {
-				sql.append(String.format("{0}", value.toString()));
+				result.append(value.toString());
 			}
+			c++;
 		}
 		
-		return sql.toString();
+		return result.toString();
 	}
 	
+	private String getCommaFromArray(String[] array) {
+		StringBuilder result = new StringBuilder(100);
+		int c = 0;
+		for (String item : array) {
+			if (c < array.length) {
+				result.append(item + ", ");
+			} else {
+				result.append(item);
+			}
+			c++;
+		}
+		return result.toString();
+	}
 	
 	/* *************************** */
 	
@@ -97,10 +113,9 @@ public class DB implements BPFDB {
 					statement.setString(i + 1, whereArgs[i]);
 				}
 			} else {
-				statement = connection.prepareStatement(String.format(
-						"DELETE FROM {0}", table));
+				statement = connection.prepareStatement("DELETE FROM " + table);
 			}
-			logger.debug(TAG, String.format("Deleting with SQL: {0}", statement));
+			logger.debug(TAG, "Deleting with SQL: " + statement);
 
 			return statement.executeUpdate();
 		} catch (SQLException e) {
@@ -113,7 +128,7 @@ public class DB implements BPFDB {
 	public void execSQL(String sql) throws BPFDBException {
 		try {
 			Statement statement = connection.createStatement();
-			logger.debug(TAG, String.format("Executing SQL: {0}", sql));
+			logger.debug(TAG, "Executing SQL: " + sql);
 			statement.executeQuery(sql);
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -127,25 +142,26 @@ public class DB implements BPFDB {
 		StringBuffer sql = new StringBuffer(150);
 		
 		// Add the basics to the sql
-		sql.append(String.format("INSERT INTO {0} (", table));
+		sql.append("INSERT INTO ");
+		sql.append(table);
+		sql.append(" (");
 		
 		// Add the column names
-		sql.append(getSQLFromMapKey(values));
+		sql.append(getCommaFromKey(values));
 		
 		// Add the values
 		sql.append(") VALUES (");
-		sql.append(getSQLFromMapValue(values));
+		sql.append(getCommaFromValue(values));
 		sql.append(")");
 		
-		logger.debug(TAG, String.format("INSERT SQL: {0}", sql.toString()));
-		
+		logger.debug(TAG, "INSERT SQL: " + sql.toString());
+
 		try {
 			statement = connection.prepareStatement(sql.toString());
 			return statement.executeUpdate();
 		} catch (SQLException e) {
-			throw new BPFDBException(
-					String.format("Unable to insert the new row, reason: {0}",
-							e.getMessage()));
+			throw new BPFDBException("Unable to insert the new row, reason: "
+					+ e.getMessage());
 		}
 	}
 
@@ -153,9 +169,65 @@ public class DB implements BPFDB {
 			String[] selectionArgs, String groupBy, String having,
 			String orderBy, String limit) throws BPFDBException {
 		
+		// Error check
+		if (table == null || table.isEmpty()) {
+			throw new BPFDBException("The table was null or empty, cannot do this");
+		}
 		
+		// Start building the SQL
+		StringBuilder sql = new StringBuilder(150);
+		sql.append("SELECT");
 		
-		return null;
+		// Add selection for the specified columns (if specified)
+		if (columns != null && columns.length > 0) {
+			sql.append(String.format(" {0} FROM {1}", getCommaFromArray(columns), table));
+		} else {
+			sql.append(" * FROM" + table);
+		}
+		
+		// Add the where selection but not they arguments quite yet (prepared statement will do this)
+		if (selection != null && !selection.isEmpty()) {
+			sql.append(" WHERE");
+			sql.append(selection.substring(0, selection.length() - 1));
+		}
+		
+		// Group by the specified argument (if spcified)
+		if (groupBy != null && !groupBy.isEmpty()) {
+			sql.append(" GROUP BY ");
+			sql.append(groupBy);
+		}
+		
+		// Add the having operator (if specified)
+		if (having != null && !having.isEmpty()) {
+			sql.append(" HAVING ");
+			sql.append(having);
+		}
+		
+		// Add the group by operator (if specified)
+		if (orderBy != null && !orderBy.isEmpty()) {
+			sql.append(" GROUP BY ");
+			sql.append(groupBy);
+		}
+		
+		// Add the limit (if specified)
+		if (limit != null && !limit.isEmpty()) {
+			sql.append(" LIMIT ");
+			sql.append(limit);
+		}
+		
+		PreparedStatement statement = null;
+		ResultSet result;
+		try {
+			statement = connection.prepareStatement(sql.toString());
+			result = statement.getResultSet();
+			if (result == null) {
+				throw new BPFDBException("The result was null when querying the database");
+			}
+		} catch (SQLException e) {
+			throw new BPFDBException("There was an error in executing the SQL: " + e.getMessage());
+		}
+		
+		return result;
 	}
 
 	public int update(String table, Map<String, Object> values, String where,
