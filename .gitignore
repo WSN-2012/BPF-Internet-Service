@@ -37,5 +37,6 @@ local.properties
 build/
 
 # Allow lib dir but not the contents, as they are dependent on WSN-BPF
-lib/*
+lib/WSN-BPF.jar
+lib/WSN-BPF-doc.jar
 
