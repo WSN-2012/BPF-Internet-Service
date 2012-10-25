@@ -196,7 +196,7 @@ public class DB implements BPFDB {
 		
 		// Add selection for the specified columns (if specified)
 		if (columns != null && columns.length > 0) {
-			sql.append(String.format(" {0} FROM {1}", getCommaFromArray(columns), table));
+			sql.append(" " + getCommaFromArray(columns) + " FROM " + table);
 		} else {
 			sql.append(" * FROM" + table);
 		}
