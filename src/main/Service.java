@@ -26,7 +26,7 @@ public class Service implements BPFService {
 
 	public Service(String args[]) {
 		// Init some stuff first
-		init();
+		init(args);
 		
 		if (args.length == 0) {
 			logger.debug(TAG, "No argmunets means listening mode");
@@ -38,7 +38,7 @@ public class Service implements BPFService {
 		}
 	}
 	
-	private void init() {
+	private void init(String args[]) {
 		// Init a logger first of all
 		logger = new Logger();
 		
@@ -53,9 +53,10 @@ public class Service implements BPFService {
 
 		// Try to init the BPF
 		try {
-			BPF.init(this);
+			BPF.init(this, args[0]);
 		} catch (BPFException e) {
-			e.printStackTrace();
+			logger.error(TAG, "Couldn't initialize the BPF, exception: " + e.getMessage());
+			System.exit(-1);
 		}
 	}
 	

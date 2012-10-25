@@ -5,17 +5,19 @@
     <!-- App specific properties -->
     <property name="app.name" value="WSN-Linux" />
     <property name="app.version" value="0.0.1" />
+    <property name="app.config" value="dtn.config.xml" />
 	
     <!-- Properties DIRS -->
     <property name="dir.src" value="src"/>
     <property name="dir.build" value="build"/>
 	<property name="dir.classes" value="${dir.build}/classes"/>
 	<property name="dir.jar" value="${dir.build}/jar"/>
-	<property name="dir.config" value="config" />
 	<property name="dir.lib" value="lib" />
+    <property name="dir.config" value="config" />
 
 	<!-- Proprties FILES -->
 	<property name="file.jar" value="${dir.jar}/${app.name}.jar" />
+    <property name="file.config" value="${dir.config}/${app.config}" />
 	
 	<!-- Properties Manifest -->
 	<property name="main-class" value="main.Main"/> 
@@ -49,7 +51,6 @@
 		<mkdir dir="${dir.build}" />
 		<mkdir dir="${dir.classes}" />
 		<mkdir dir="${dir.jar}" />
-		<mkdir dir="${dir.jar}/config" />
 	</target>
 
     <target name="compile" depends="prepare">
@@ -67,9 +68,7 @@
 				<attribute name="Class-Path" value="${manifest.classpath}"/>
     		</manifest>
 		</jar>
-		<copy todir="${dir.jar}/${dir.config}">
-    		<fileset dir="${dir.config}"/>
- 		</copy>
+		<copy file="${file.config}" tofile="${dir.jar}/${app.config}"/>
         <copy todir="${dir.jar}/${dir.lib}" >
             <fileset dir="${dir.lib}" />
         </copy>
@@ -77,7 +76,9 @@
 
 
 	<target name="run" depends="jar">
-  		<java jar="${file.jar}" fork="true"/>
+  		<java jar="${file.jar}" fork="true">
+            <arg value="build/jar/dtn.config.xml" />
+        </java>
   	</target>  
 
 	<!-- This is the target that is run automatically -->
