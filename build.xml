@@ -20,7 +20,7 @@
     <property name="file.config" value="${dir.config}/${app.config}" />
 	
 	<!-- Properties Manifest -->
-	<property name="main-class" value="main.Main"/> 
+	<property name="main-class" value="service.Service"/> 
 
 
 	<!-- ******************* FILESETS ************************ -->

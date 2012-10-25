@@ -1,4 +1,4 @@
-package main;
+package service;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -23,7 +23,11 @@ public class Service implements BPFService {
 	private ActionReceiver action;
 	private Communication comm;
 	private DB db;
-
+	
+	public static void main(String args[]) {
+		new Service(args);
+	}
+	
 	public Service(String args[]) {
 		// Init some stuff first
 		init(args);
