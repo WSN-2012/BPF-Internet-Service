@@ -1,7 +1,6 @@
 package service;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 
 import se.kth.ssvl.tslab.wsn.general.bpf.BPF;
 import se.kth.ssvl.tslab.wsn.general.bpf.BPFActionReceiver;
@@ -32,9 +31,9 @@ public class Service implements BPFService {
 		// Init some stuff first
 		init(args);
 		
-		if (args.length == 0) {
+		if (args.length == 1) {
 			logger.debug(TAG, "No argmunets means listening mode");
-		} else if (args.length == 4) {
+		} else if (args.length == 5) {
 			
 		} else {
 			usage();
