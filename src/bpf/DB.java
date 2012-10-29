@@ -116,7 +116,6 @@ public class DB implements BPFDB {
 		HashMap<String, Object> res = new HashMap<String, Object>();
 		for (Map.Entry<String, Object> item : map.entrySet()) {
 			if (!item.getValue().toString().isEmpty()) {
-				logger.debug(TAG, "Adding item: (" + item.getKey() + ":" + item.getValue() +")");
 				res.put(item.getKey(), item.getValue());
 			}
 		}
@@ -174,7 +173,7 @@ public class DB implements BPFDB {
 		HashMap<String, Object> nonEmpty = getNonEmptyEntries(values);
 		
 		// Add the basics to the sql
-		sql.append("INSERT INTO ");
+		sql.append("INSERT OR IGNORE INTO ");
 		sql.append(table);
 		sql.append(" (");
 		
