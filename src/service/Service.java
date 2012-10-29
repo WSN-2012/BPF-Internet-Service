@@ -32,7 +32,7 @@ public class Service implements BPFService {
 		init(args);
 		
 		if (args.length == 1) {
-			logger.debug(TAG, "No argmunets means listening mode");
+			logger.info(TAG, "No argmunets means listening mode");
 		} else if (args.length == 5) {
 			
 		} else {

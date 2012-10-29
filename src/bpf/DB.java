@@ -8,6 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashMap;
 import java.util.Map;
 
 import se.kth.ssvl.tslab.wsn.general.bpf.BPFDB;
@@ -48,40 +49,43 @@ public class DB implements BPFDB {
 	    logger.debug(TAG, "The DB class has been initialized properly");
 	}
 
-	
 	private String getCommaFromKey(Map<String, Object> map) {
 		StringBuilder result = new StringBuilder(100);
 		int c = 0;
-		for (String key : map.keySet()) {
-			if (c < map.size()) {
-				result.append(key + ", ");
-			} else {
-				result.append(key);
-			}
+		for (Map.Entry<String, Object> item : map.entrySet()) {
 			c++;
+			
+			// Check if we need to add a comma or not
+			if (c < map.size()) {
+				result.append(item.getKey() + ", ");
+			} else {
+				result.append(item.getKey());
+			}
 		}
 		
 		return result.toString();
 	}
-	
+
 	private String getCommaFromValue(Map<String, Object> map) {
 		StringBuilder result = new StringBuilder(100);
 		int c = 0;
-		for (Object value : map.values()) {
-			if (c < map.size()) {
-				result.append(value.toString() + ", ");
-			} else {
-				result.append(value.toString());
-			}
+		for (Map.Entry<String, Object> item : map.entrySet()) {
 			c++;
+
+			// Check if we need to add a comma or not
+			if (c < map.keySet().size()) {
+				result.append(item.getValue() + ", ");
+			} else {
+				result.append(item.getValue());
+			}
 		}
-		
+
 		return result.toString();
 	}
 	
 	private String getCommaFromArray(String[] array) {
 		StringBuilder result = new StringBuilder(100);
-		int c = 0;
+		int c = 1;
 		for (String item : array) {
 			if (c < array.length) {
 				result.append(item + ", ");
@@ -95,7 +99,7 @@ public class DB implements BPFDB {
 	
 	private String getUpdateStringFromMap(Map<String, Object> map) {
 		StringBuilder result = new StringBuilder(100);
-		int c = 0;
+		int c = 1;
 		for (Map.Entry<String, Object> item : map.entrySet()) {
 			if (c < map.size()) {
 				result.append(item.getKey() + "='" + item.getValue() + "', ");
@@ -106,6 +110,17 @@ public class DB implements BPFDB {
 		}
 		
 		return result.toString();
+	}
+	
+	private HashMap<String, Object> getNonEmptyEntries(Map<String, Object> map) {
+		HashMap<String, Object> res = new HashMap<String, Object>();
+		for (Map.Entry<String, Object> item : map.entrySet()) {
+			if (!item.getValue().toString().isEmpty()) {
+				logger.debug(TAG, "Adding item: (" + item.getKey() + ":" + item.getValue() +")");
+				res.put(item.getKey(), item.getValue());
+			}
+		}
+		return res;
 	}
 	
 	/* *************************** */
@@ -124,7 +139,7 @@ public class DB implements BPFDB {
 		PreparedStatement statement = null;
 
 		try {
-			if (whereClause != null && !whereClause.isEmpty()) {
+			if (whereClause != null && !whereClause.isEmpty() && whereArgs != null) {
 				statement = connection.prepareStatement(
 						"DELETE FROM " + table + " WHERE " + whereClause);
 				for (int i=0; i < whereArgs.length; i++) {
@@ -145,9 +160,9 @@ public class DB implements BPFDB {
 		try {
 			Statement statement = connection.createStatement();
 			logger.debug(TAG, "Executing SQL: " + sql);
-			statement.executeQuery(sql);
+			statement.execute(sql);
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw new BPFDBException("Error in executing sql: " + e.getMessage());	
 		}
 	}
 
@@ -156,6 +171,7 @@ public class DB implements BPFDB {
 				
 		PreparedStatement statement = null;
 		StringBuffer sql = new StringBuffer(150);
+		HashMap<String, Object> nonEmpty = getNonEmptyEntries(values);
 		
 		// Add the basics to the sql
 		sql.append("INSERT INTO ");
@@ -163,12 +179,13 @@ public class DB implements BPFDB {
 		sql.append(" (");
 		
 		// Add the column names
-		sql.append(getCommaFromKey(values));
+		sql.append(getCommaFromKey(nonEmpty));
 		
 		// Add the values
 		sql.append(") VALUES (");
-		sql.append(getCommaFromValue(values));
+		sql.append(getCommaFromValue(nonEmpty));
 		sql.append(")");
+		
 		
 		logger.debug(TAG, "INSERT SQL: " + sql.toString());
 
@@ -198,12 +215,12 @@ public class DB implements BPFDB {
 		if (columns != null && columns.length > 0) {
 			sql.append(" " + getCommaFromArray(columns) + " FROM " + table);
 		} else {
-			sql.append(" * FROM" + table);
+			sql.append(" * FROM " + table);
 		}
 		
 		// Add the where selection but not they arguments quite yet (prepared statement will do this)
 		if (selection != null && !selection.isEmpty()) {
-			sql.append(" WHERE");
+			sql.append(" WHERE ");
 			sql.append(selection);
 		}
 		
@@ -230,29 +247,34 @@ public class DB implements BPFDB {
 			sql.append(" LIMIT ");
 			sql.append(limit);
 		}
-		
+
 		PreparedStatement statement = null;
 		ResultSet result;
 		try {
 			statement = connection.prepareStatement(sql.toString());
 
 			// Add all the selection args
-			if (selection != null && !selection.isEmpty()) {
+			if (selection != null && !selection.isEmpty()
+					&& selectionArgs != null) {
 				for (int i = 0; i < selectionArgs.length; i++) {
 					statement.setString(i + 1, selectionArgs[i]);
 				}
 			}
 			
-			logger.debug(TAG, "Query SQL: " + statement);
-			
+			logger.debug(TAG, "Query SQL: " + sql.toString());
+
 			result = statement.getResultSet();
 			if (result == null) {
-				throw new BPFDBException("The result was null when querying the database");
+				throw new BPFDBException(
+						"The result was null when querying the database");
 			}
 		} catch (SQLException e) {
-			throw new BPFDBException("There was an error in executing the SQL: " + e.getMessage());
+			e.printStackTrace();
+			throw new BPFDBException(
+					"There was an error in executing the SQL: "
+							+ e.getMessage() + "\nTried to run query: " + sql.toString());
 		}
-		
+
 		return result;
 	}
 
@@ -282,7 +304,7 @@ public class DB implements BPFDB {
 		try {
 			statement = connection.prepareStatement(sql.toString());
 			
-			if (where != null && !where.isEmpty()) {
+			if (where != null && !where.isEmpty() && whereArgs != null) {
 				for (int i=0; i < whereArgs.length; i++) {
 					statement.setString(i + 1, whereArgs[i]);
 				}
