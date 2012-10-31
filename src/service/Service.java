@@ -9,6 +9,8 @@ import se.kth.ssvl.tslab.wsn.general.bpf.BPFDB;
 import se.kth.ssvl.tslab.wsn.general.bpf.BPFLogger;
 import se.kth.ssvl.tslab.wsn.general.bpf.BPFService;
 import se.kth.ssvl.tslab.wsn.general.bpf.exceptions.BPFException;
+import se.kth.ssvl.tslab.wsn.general.dtnapi.exceptions.DTNOpenException;
+import se.kth.ssvl.tslab.wsn.general.dtnapi.types.DTNEndpointID;
 import bpf.ActionReceiver;
 import bpf.Communication;
 import bpf.DB;
@@ -28,13 +30,18 @@ public class Service implements BPFService {
 	}
 	
 	public Service(String args[]) {
-		// Init some stuff first
-		init(args);
-		
 		if (args.length == 1) {
+			init(args);
 			logger.info(TAG, "No argmunets means listening mode");
-		} else if (args.length == 5) {
-			
+		} else if (args.length == 2) {
+			init(args);
+			try {
+				BPF.getInstance().send(new DTNEndpointID(args[1]), 10000000, "TEEEST".getBytes());
+			} catch (DTNOpenException e) {
+				logger.error(TAG, "There was an error when trying to send the bundle");
+				e.printStackTrace();
+			}
+			logger.info(TAG, "Arguments passed trying to send");
 		} else {
 			usage();
 			System.exit(-1);
@@ -64,7 +71,8 @@ public class Service implements BPFService {
 	}
 	
 	private void usage() {
-		logger.error(TAG, "This is some cool usage");
+		//System.out.println("config-file-path <dest eid> <source eid> <payload type> <payload> \n payload type: <f|m> \n payload: <filename|double quoted message>");
+		System.out.println("config-file-path <dest eid>");
 	}
 
 	/* ***************************** */
