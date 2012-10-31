@@ -308,7 +308,7 @@ public class DB implements BPFDB {
 					statement.setString(i + 1, whereArgs[i]);
 				}
 			}
-			logger.debug(TAG, "Updating with SQL: " + statement);
+			logger.debug(TAG, "Updating with SQL: " + sql.toString());
 
 			return statement.executeUpdate();
 		} catch (SQLException e) {
