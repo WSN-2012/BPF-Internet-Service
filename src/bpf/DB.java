@@ -289,7 +289,7 @@ public class DB implements BPFDB {
 		StringBuffer sql = new StringBuffer(150);
 		
 		// Start building the sql
-		sql.append("UPDATE " + table + " SET");
+		sql.append("UPDATE " + table + " SET ");
 		
 		// Add the update values
 		sql.append(getUpdateStringFromMap(values));
