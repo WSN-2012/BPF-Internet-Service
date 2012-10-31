@@ -25,7 +25,7 @@ public class ActionReceiver implements BPFActionReceiver {
 	}
 
 	public void notify(String header, String description) {
-		logger.debug(TAG, String.format("[{0}] {1}", header, description));
+		logger.info(TAG, header + ":" + description);
 	}
 
 	
