@@ -14,23 +14,23 @@ public class Logger implements BPFLogger {
 	}
 
 	public String debug(String TAG, String text) {
-		return log("[DEBUG] [" + TAG + "]: " + text, new Ansi(
-				Ansi.Attribute.BRIGHT, Ansi.Color.CYAN, null));
+		return log("[DEBUG] [" + Thread.currentThread().getName() + "] [" +
+				TAG + "]: " + text, new Ansi(Ansi.Attribute.BRIGHT, Ansi.Color.CYAN, null));
 	}
 
 	public String error(String TAG, String text) {
-		return log("[ERROR] [" + TAG + "]: " + text, new Ansi(
-				Ansi.Attribute.BRIGHT, Ansi.Color.RED, null));
+		return log("[ERROR] [" + Thread.currentThread().getName() + "] [" +
+				TAG + "]: " + text, new Ansi(Ansi.Attribute.BRIGHT, Ansi.Color.RED, null));
 	}
 
 	public String info(String TAG, String text) {
-		return log("[INFO] [" + TAG + "]: " + text, new Ansi(
-				Ansi.Attribute.BRIGHT, Ansi.Color.GREEN, null));
+		return log("[INFO] [" + Thread.currentThread().getName() + "] [" +
+				TAG + "]: " + text, new Ansi(Ansi.Attribute.BRIGHT, Ansi.Color.GREEN, null));
 	}
 
 	public String warning(String TAG, String text) {
-		return log("[WARN] [" + TAG + "]: " + text, new Ansi(
-				Ansi.Attribute.BRIGHT, Ansi.Color.YELLOW, null));
+		return log("[WARN] [" + Thread.currentThread().getName() + "] [" +
+				TAG + "]: " + text, new Ansi(Ansi.Attribute.BRIGHT, Ansi.Color.YELLOW, null));
 	}
 
 }
