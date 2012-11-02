@@ -8,7 +8,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import se.kth.ssvl.tslab.wsn.general.bpf.BPFDB;
@@ -196,7 +198,7 @@ public class DB implements BPFDB {
 		}
 	}
 
-	public ResultSet query(String table, String[] columns, String selection,
+	public List<Map<String, Object>> query(String table, String[] columns, String selection,
 			String[] selectionArgs, String groupBy, String having,
 			String orderBy, String limit) throws BPFDBException {
 		
@@ -247,7 +249,8 @@ public class DB implements BPFDB {
 		}
 
 		PreparedStatement statement = null;
-		ResultSet result;
+		ResultSet rs = null;
+		List<Map<String, Object>> result = new ArrayList<Map<String,Object>>();
 		try {
 			statement = connection.prepareStatement(sql.toString());
 
@@ -261,16 +264,36 @@ public class DB implements BPFDB {
 			
 			logger.debug(TAG, "Query SQL: " + sql.toString());
 
-			result = statement.getResultSet();
-			if (result == null) {
+			// Run the sql and get the resultset
+			rs = statement.getResultSet();
+			
+			if (rs == null) {
 				throw new BPFDBException(
 						"The result was null when querying the database");
+			}
+			
+			// For each row
+			while (rs.next()) {
+				// Create a row object (HashMap)
+				HashMap<String, Object> row = new HashMap<String, Object>();
+				for (int i=0; i < columns.length; i++) {
+					// And put each column<->value pair
+					row.put(columns[i], rs.getObject(columns[i]));
+				}
+				// Last but not least add the row to list with rows
+				result.add(row);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 			throw new BPFDBException(
 					"There was an error in executing the SQL: "
 							+ e.getMessage() + "\nTried to run query: " + sql.toString());
+		} finally {
+			try {
+				rs.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
 
 		return result;
