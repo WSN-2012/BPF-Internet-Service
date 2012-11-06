@@ -30,13 +30,13 @@ public class Service implements BPFService {
 	}
 	
 	public Service(String args[]) {
-		if (args.length == 1) {
+		if (args.length == 2) {
 			init(args);
 			logger.info(TAG, "No argmunets means listening mode");
-		} else if (args.length == 2) {
+		} else if (args.length == 3) {
 			init(args);
 			try {
-				BPF.getInstance().send(new DTNEndpointID(args[1]), 10000000, "TEEEST".getBytes());
+				BPF.getInstance().send(new DTNEndpointID(args[2]), 10000000, "TEEEST".getBytes());
 			} catch (DTNOpenException e) {
 				logger.error(TAG, "There was an error when trying to send the bundle");
 				e.printStackTrace();
@@ -50,7 +50,7 @@ public class Service implements BPFService {
 	
 	private void init(String args[]) {
 		// Init a logger first of all
-		logger = new Logger();
+		logger = new Logger(Integer.parseInt(args[1]));
 		
 		// Init the action receiver
 		action = new ActionReceiver(logger);

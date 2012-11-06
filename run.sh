@@ -1,4 +1,4 @@
 #!/bin/bash
 
-java -jar build/jar/WSN-Linux.jar 'build/jar/dtn.config.xml' "$@"
+java -jar build/jar/WSN-Linux.jar 'build/jar/dtn.config.xml' 2 "$@"
 
