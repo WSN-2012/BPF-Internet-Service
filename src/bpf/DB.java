@@ -6,6 +6,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -39,7 +40,7 @@ public class DB implements BPFDB {
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
-	    
+	    	
 	    try {
 			connection = DriverManager.getConnection("jdbc:sqlite:" + dbFile.getAbsolutePath());
 		} catch (SQLException e) {
@@ -265,7 +266,7 @@ public class DB implements BPFDB {
 			logger.debug(TAG, "Query SQL: " + sql.toString());
 
 			// Run the sql and get the resultset
-			rs = statement.getResultSet();
+			rs = statement.executeQuery();
 			
 			if (rs == null) {
 				throw new BPFDBException(
@@ -276,10 +277,19 @@ public class DB implements BPFDB {
 			while (rs.next()) {
 				// Create a row object (HashMap)
 				HashMap<String, Object> row = new HashMap<String, Object>();
-				for (int i=0; i < columns.length; i++) {
-					// And put each column<->value pair
-					row.put(columns[i], rs.getObject(columns[i]));
+
+				if (columns != null) {
+					for (int i = 0; i < columns.length; i++) {
+						// And put each column<->value pair
+						row.put(columns[i], rs.getObject(columns[i]));
+					}
+				} else {
+					ResultSetMetaData rsm = rs.getMetaData();
+					for (int i = 1; i <= rsm.getColumnCount(); i++) {
+						row.put(rsm.getColumnName(i), rs.getObject(rsm.getColumnName(i)));
+					}
 				}
+
 				// Last but not least add the row to list with rows
 				result.add(row);
 			}
