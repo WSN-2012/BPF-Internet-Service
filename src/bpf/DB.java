@@ -191,12 +191,21 @@ public class DB implements BPFDB {
 		logger.debug(TAG, "INSERT SQL: " + sql.toString());
 
 		try {
+			// Run the sql 
 			statement = connection.prepareStatement(sql.toString());
-			return statement.executeUpdate();
+			statement.executeUpdate();
+			
+			// Return the generated key
+			ResultSet generatedKeys = statement.getGeneratedKeys();
+			if (generatedKeys.next()) {
+	            return (int)generatedKeys.getLong(1);
+			}
 		} catch (SQLException e) {
 			throw new BPFDBException("Unable to insert the new row, reason: "
 					+ e.getMessage());
 		}
+		
+		return -1;
 	}
 
 	public List<Map<String, Object>> query(String table, String[] columns, String selection,
