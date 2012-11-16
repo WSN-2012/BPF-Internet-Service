@@ -143,8 +143,8 @@ public class DB implements BPFDB {
 		try {
 			if (whereClause != null && !whereClause.isEmpty()) {
 				String sql = "DELETE FROM " + table + " WHERE " + whereClause;
+				statement = connection.prepareStatement(sql);
 				if (whereArgs != null) {
-					statement = connection.prepareStatement(sql);
 					for (int i=0; i < whereArgs.length; i++) {
 						statement.setString(i + 1, whereArgs[i]);
 					}
