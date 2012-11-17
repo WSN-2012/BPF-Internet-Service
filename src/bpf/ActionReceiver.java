@@ -30,7 +30,7 @@ public class ActionReceiver implements BPFActionReceiver {
 				f.read(buffer);
 				logger.info(TAG, new String(buffer));
 				BundlePayloadParser b = new BundlePayloadParser(buffer);
-				b.dataparser();
+				b.dataparser(bundle.source().str());
 			} catch (FileNotFoundException e) {
 				BPF.getInstance().getBPFLogger().error(TAG, "Payload should be in file: " +
 						bundle.payload().file().getAbsolutePath() + ". But did not exist!");

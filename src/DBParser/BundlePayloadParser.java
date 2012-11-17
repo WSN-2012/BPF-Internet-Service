@@ -9,7 +9,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import server.Data;
+import server.Gateway;
 import server.SQLQueries;
+import server.Sensor;
 
 
 public class BundlePayloadParser {
@@ -29,9 +31,11 @@ public class BundlePayloadParser {
 		this.buffer = buffer;
 	}
 	
-	public void dataparser(){
+	public void dataparser(String gatewayName){
 		String lines[] = new String(buffer).split("\\r?\\n");
 		Data data;
+		Gateway gateway;
+		Sensor sensor;
 		Double ps, t, tmcu, vmcu, rh, vin;
 		ps = t = tmcu = vmcu = rh = vin = 4.94065645841246544e-324d;//initialize to first double value to indicate null value
 		for (int i=0; i<lines.length; i++){
@@ -82,7 +86,9 @@ public class BundlePayloadParser {
 			
 			//System.out.println(timestampstr + " "+ utstr + " "+ idstr + " "+ psstr + " "+ tstr + " "+ tmcustr + " "+ vmcustr + " "+ up + " "+ rhstr + " "+ vinstr);
 			data = new Data(utimestamp, ut, t, ps, tmcu, vmcu, up, rh, vin, "garden");
-			SQLQueries.setData(id, data);
+			gateway = SQLQueries.setGateway(gatewayName);
+			sensor = SQLQueries.setSensor(id,gatewayName);
+			SQLQueries.setData(sensor.getId(), data);
 			}catch(Exception e){
 				System.out.println(e);
 				e.printStackTrace();
@@ -98,7 +104,7 @@ public class BundlePayloadParser {
 			byte[] buffer = new byte[(int) f.length()];
 			f.read(buffer);
 			BundlePayloadParser b = new BundlePayloadParser(buffer);
-			b.dataparser();
+			b.dataparser("dtn://natty.dtn");
 		} catch (FileNotFoundException e) {
 			System.out.println(e.toString());
             return;
