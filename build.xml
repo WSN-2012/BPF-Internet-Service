@@ -15,10 +15,12 @@
 	<property name="dir.lib" value="lib" />
     <property name="dir.config" value="config" />
     <property name="dir.dtn" value="${dir.build}/dtn" />
+    <property name="dir.bpf" value="${dir.lib}/BPF" />
 
 	<!-- Proprties FILES -->
 	<property name="file.jar" value="${dir.jar}/${app.name}.jar" />
     <property name="file.config" value="${dir.config}/${app.config}" />
+    <property name="file.bpf" value="${dir.bpf}/build/jar/WSN-BPF.jar" />
 	
 	<!-- Properties Manifest -->
 	<property name="main-class" value="service.Service"/> 
@@ -55,7 +57,12 @@
         <mkdir dir="${dir.dtn}" />
 	</target>
 
-    <target name="compile" depends="prepare">
+    <target name="bpf">
+        <ant antfile="build.xml" dir="${dir.bpf}" />
+        <copy file="${file.bpf}" tofile="${dir.lib}/WSN-BPF.jar"/>
+    </target>
+
+    <target name="compile" depends="prepare, bpf">
         <javac includeantruntime="false" srcdir="${dir.src}" destdir="${dir.classes}"
 			debug="on" debuglevel="lines,vars,source">
 			<classpath refid="lib-classpath"/>
