@@ -61,6 +61,7 @@ public class ActionReceiver implements BPFActionReceiver {
 		logger.info(TAG, header + ":" + description);
 	}
 
+	//TODO: this method needs to notify the app
 	public void updateStats (Stats stats) {
 		logger.debug(TAG, "New Stats object received:" +
 				"\nTotal size: " + stats.totalSize() + 
