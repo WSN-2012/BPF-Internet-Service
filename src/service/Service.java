@@ -64,10 +64,12 @@ public class Service implements BPFService {
 		// Try to init the BPF
 		try {
 			BPF.init(this, args[0]);
+			BPF.getInstance().start();
 		} catch (BPFException e) {
 			logger.error(TAG, "Couldn't initialize the BPF, exception: " + e.getMessage());
 			System.exit(-1);
 		}
+		
 	}
 	
 	private void usage() {
