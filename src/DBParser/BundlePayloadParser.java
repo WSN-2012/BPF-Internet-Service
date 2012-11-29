@@ -8,10 +8,10 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import server.Data;
-import server.Gateway;
-import server.SQLQueries;
-import server.Sensor;
+import database.Data;
+import database.Gateway;
+import database.SQLQueries;
+import database.Sensor;
 
 
 public class BundlePayloadParser {
