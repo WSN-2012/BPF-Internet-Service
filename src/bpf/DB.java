@@ -139,17 +139,20 @@ public class DB implements BPFDB {
 			throws BPFDBException {
 
 		PreparedStatement statement = null;
-		String sql = "DELETE FROM " + table + " WHERE " + whereClause;
 		try {
-			if (whereClause != null && !whereClause.isEmpty() && whereArgs != null) {
+			if (whereClause != null && !whereClause.isEmpty()) {
+				String sql = "DELETE FROM " + table + " WHERE " + whereClause;
 				statement = connection.prepareStatement(sql);
-				for (int i=0; i < whereArgs.length; i++) {
-					statement.setString(i + 1, whereArgs[i]);
+				if (whereArgs != null) {
+					for (int i=0; i < whereArgs.length; i++) {
+						statement.setString(i + 1, whereArgs[i]);
+					}
 				}
+				logger.debug(TAG, "Deleting with SQL: " + sql);
 			} else {
 				statement = connection.prepareStatement("DELETE FROM " + table);
+				logger.warning(TAG, "Deleting all items in: " + table);
 			}
-			logger.debug(TAG, "Deleting with SQL: " + sql);
 
 			return statement.executeUpdate();
 		} catch (SQLException e) {

@@ -11,6 +11,7 @@ import se.kth.ssvl.tslab.wsn.general.bpf.BPFService;
 import se.kth.ssvl.tslab.wsn.general.bpf.exceptions.BPFException;
 import se.kth.ssvl.tslab.wsn.general.dtnapi.exceptions.DTNOpenException;
 import se.kth.ssvl.tslab.wsn.general.dtnapi.types.DTNEndpointID;
+import se.kth.ssvl.tslab.wsn.general.servlib.storage.Stats;
 import bpf.ActionReceiver;
 import bpf.Communication;
 import bpf.DB;
@@ -64,6 +65,7 @@ public class Service implements BPFService {
 		// Try to init the BPF
 		try {
 			BPF.init(this, args[0]);
+			BPF.getInstance().start();
 		} catch (BPFException e) {
 			logger.error(TAG, "Couldn't initialize the BPF, exception: " + e.getMessage());
 			System.exit(-1);
@@ -92,5 +94,8 @@ public class Service implements BPFService {
 	public BPFActionReceiver getBPFActionReceiver() {
 		return action;
 	}
-	
+
+	public void updateStats(Stats arg0) {
+		
+	}
 }
