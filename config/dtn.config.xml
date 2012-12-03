@@ -27,7 +27,7 @@
     <!--  Links Section -->
     <tns:LinksSetting proactive_fragmentation="true" fragmentation_mtu="5000">
         <!--  Setup your links here -->
-        <!-- <tns:Link id="bifrost_tcp_link" conv_layer_type="tcp" dest="192.168.0.1:4556" type="ONDEMAND" /> -->
+        <!-- <tns:Link id="bifrost_tcp_link" conv_layer_type="tcp" dest="192.168.0.1:4556" type="ONDEMAND" interval="5" /> -->
     </tns:LinksSetting>
 
 
