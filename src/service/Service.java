@@ -31,13 +31,13 @@ public class Service implements BPFService {
 	}
 
 	public Service(String args[]) {
-		if (args.length == 2) {
+		if (args.length == 3) {
 			init(args);
 			logger.info(TAG, "No argmunets means listening mode");
-		} else if (args.length == 3) {
+		} else if (args.length == 4) {
 			init(args);
 			try {
-				BPF.getInstance().send(new DTNEndpointID(args[2]), 10000000,
+				BPF.getInstance().send(new DTNEndpointID(args[3]), 10000000,
 						"TEEEST".getBytes());
 			} catch (DTNOpenException e) {
 				logger.error(TAG,
@@ -64,7 +64,7 @@ public class Service implements BPFService {
 
 	private void init(String args[]) {
 		// Init a logger first of all
-		logger = new Logger(Integer.parseInt(args[1]));
+		logger = new Logger(Integer.parseInt(args[1]), args[2]);
 
 		// Init the action receiver
 		action = new ActionReceiver(logger);
@@ -89,7 +89,7 @@ public class Service implements BPFService {
 
 	private void usage() {
 		// System.out.println("config-file-path <dest eid> <source eid> <payload type> <payload> \n payload type: <f|m> \n payload: <filename|double quoted message>");
-		System.out.println("config-file-path <dest eid>");
+		System.out.println("config-file-path log-file <dest eid>");
 	}
 
 	/* ***************************** */
