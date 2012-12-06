@@ -5,7 +5,6 @@ import java.net.InetAddress;
 import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.util.Enumeration;
 
 import se.kth.ssvl.tslab.wsn.general.bpf.BPF;
@@ -47,14 +46,13 @@ public class Communication implements BPFCommunication {
 
 		BPF.getInstance()
 				.getBPFLogger()
-				.error(
-						TAG,
+				.error(TAG,
 						"Called getBroadcastAddress but couldn't find the interface: "
 								+ interfaceName);
 		return null;
 	}
 
-	public InetAddress getDeviceIP() {
+	public InetAddress getDeviceIP(String interfaceName) {
 		try {
 			Enumeration<NetworkInterface> ifaces = NetworkInterface
 					.getNetworkInterfaces();
@@ -65,7 +63,8 @@ public class Communication implements BPFCommunication {
 				while (addresses.hasMoreElements()) {
 					InetAddress addr = addresses.nextElement();
 					if (addr instanceof Inet4Address
-							&& !addr.isLoopbackAddress()) {
+							&& !addr.isLoopbackAddress()
+							&& iface.getName().equals(interfaceName)) {
 						BPF.getInstance().getBPFLogger()
 								.debug(TAG, "getDeviceIP returning " + addr);
 						return addr;
@@ -76,6 +75,13 @@ public class Communication implements BPFCommunication {
 			BPF.getInstance().getBPFLogger()
 					.error(TAG, "Exception while getting device address.");
 		}
+
+		BPF.getInstance()
+				.getBPFLogger()
+				.error(TAG,
+						"Called getDeviceIp but couldn't find the interface: "
+								+ interfaceName);
+
 		return null;
 	}
 
