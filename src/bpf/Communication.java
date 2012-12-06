@@ -47,7 +47,7 @@ public class Communication implements BPFCommunication {
 
 		BPF.getInstance()
 				.getBPFLogger()
-				.warning(
+				.error(
 						TAG,
 						"Called getBroadcastAddress but couldn't find the interface: "
 								+ interfaceName);
