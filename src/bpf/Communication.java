@@ -14,8 +14,8 @@ import se.kth.ssvl.tslab.wsn.general.bpf.BPFCommunication;
 public class Communication implements BPFCommunication {
 
 	private static final String TAG = "Communication";
-	
-	public InetAddress getBroadcastAddress() {
+
+	public InetAddress getBroadcastAddress(String interfaceName) {
 		System.setProperty("java.net.preferIPv4Stack", "true");
 		try {
 			Enumeration<NetworkInterface> niEnum = NetworkInterface
@@ -25,13 +25,21 @@ public class Communication implements BPFCommunication {
 				if (!ni.isLoopback()) {
 					for (InterfaceAddress interfaceAddress : ni
 							.getInterfaceAddresses()) {
-						if (interfaceAddress.getBroadcast() != null) {
-							BPF.getInstance().getBPFLogger().debug(TAG,
-											"getBroadcastAddress returning: "
-											+ interfaceAddress.getBroadcast());
+						if (interfaceAddress.getBroadcast() != null
+								&& ni.getName().equals(name)) {
+							BPF.getInstance()
+									.getBPFLogger()
+									.debug(TAG,
+											"getBroadcastAddress from interface "
+													+ name
+													+ " is: "
+													+ interfaceAddress
+															.getBroadcast());
 							return interfaceAddress.getBroadcast();
 						} else {
-							BPF.getInstance().getBPFLogger().warning(TAG,
+							BPF.getInstance()
+									.getBPFLogger()
+									.warning(TAG,
 											"Called getBroadcastAddress but foundBcastAddress is null!");
 						}
 					}
@@ -57,8 +65,8 @@ public class Communication implements BPFCommunication {
 					InetAddress addr = addresses.nextElement();
 					if (addr instanceof Inet4Address
 							&& !addr.isLoopbackAddress()) {
-						BPF.getInstance().getBPFLogger().debug(TAG,
-								"getDeviceIP returning " + addr);
+						BPF.getInstance().getBPFLogger()
+								.debug(TAG, "getDeviceIP returning " + addr);
 						return addr;
 					}
 				}
@@ -69,5 +77,5 @@ public class Communication implements BPFCommunication {
 		}
 		return null;
 	}
-	
+
 }
