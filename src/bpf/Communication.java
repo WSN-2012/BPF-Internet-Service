@@ -26,12 +26,12 @@ public class Communication implements BPFCommunication {
 					for (InterfaceAddress interfaceAddress : ni
 							.getInterfaceAddresses()) {
 						if (interfaceAddress.getBroadcast() != null
-								&& ni.getName().equals(name)) {
+								&& ni.getName().equals(interfaceName)) {
 							BPF.getInstance()
 									.getBPFLogger()
 									.debug(TAG,
 											"getBroadcastAddress from interface "
-													+ name
+													+ interfaceName
 													+ " is: "
 													+ interfaceAddress
 															.getBroadcast());
