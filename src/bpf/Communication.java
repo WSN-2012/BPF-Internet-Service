@@ -36,11 +36,6 @@ public class Communication implements BPFCommunication {
 													+ interfaceAddress
 															.getBroadcast());
 							return interfaceAddress.getBroadcast();
-						} else {
-							BPF.getInstance()
-									.getBPFLogger()
-									.warning(TAG,
-											"Called getBroadcastAddress but couldn't find the interface: " + interfaceName);
 						}
 					}
 				}
@@ -50,6 +45,12 @@ public class Communication implements BPFCommunication {
 					.error(TAG, "Exception while getting broadcast address.");
 		}
 
+		BPF.getInstance()
+				.getBPFLogger()
+				.warning(
+						TAG,
+						"Called getBroadcastAddress but couldn't find the interface: "
+								+ interfaceName);
 		return null;
 	}
 
