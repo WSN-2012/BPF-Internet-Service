@@ -354,7 +354,7 @@ public class Database {
 			// Submit a query, creating a ResultSet object
 			// Get all sensors registered in a specific gateway
 			ResultSet rs = statement
-					.executeQuery("select * from sensor where gateway = " + gatewayID );
+					.executeQuery("select * from sensor where gateway = " + gatewayID + " and name != 'No sensor name'");
 			
 			// Create sensor objects from the Result set and add them to the sensor list
 			while (rs.next()) {
@@ -468,17 +468,29 @@ public class Database {
 	public boolean duplicateRecord(String id, Date utimestamp) {
 		boolean exist = false;//indicate that no such record exists in DB
 		try {
+			if(utimestamp!=null){
 				java.sql.Timestamp timestamp = new java.sql.Timestamp(utimestamp.getTime());
-			// Submit a query, creating a ResultSet object
-			ResultSet rs = statement
-					.executeQuery("select * from data where sensor = '"
-							+ id + "' AND utimestamp = '" + utimestamp + "'");
-
-			if (rs.next()) {
-				exist = true;
-			} 
+				// Submit a query, creating a ResultSet object
+				ResultSet rs = statement
+						.executeQuery("select * from data where sensor = '"
+								+ id + "' AND utimestamp = '" + utimestamp + "'");
+	
+				if (rs.next()) {
+					exist = true;
+				} 
+				rs.close();//close Result Set
+			}else{
+				ResultSet rs = statement
+						.executeQuery("select * from data where sensor = '"
+								+ id + "'");
+	
+				if (rs.next()) {
+					exist = true;
+				} 
+				rs.close();//close Result Set
+			}
 			
-			rs.close();//close Result Set
+			
 			return exist;
 				
 		} catch (SQLException ex) {
@@ -676,7 +688,7 @@ public class Database {
 	 * @return
 	 * 			return sensor instance
 	 */
-	public Sensor setSensor(String sensorID, String gatewayName) {
+	public Sensor setSensor(String sensorID, String sensorName, String gatewayName) {
 		Sensor sensor = null;
 		try {
 			//check if sensor exists in order to avoid duplicate records in the DB
@@ -686,7 +698,7 @@ public class Database {
 				Gateway gateway = getGateway(gatewayName);
 				// Submit a query, creating a ResultSet object
 				// insert sensor record with sensor id and gateway id
-				statement.executeUpdate("insert into sensor values('" + sensorID + "', 'garden', " + gateway.getId() + ")");
+				statement.executeUpdate("insert into sensor values('" + sensorID + "', '" + sensorName + "', " + gateway.getId() + ")");
 			}
 			
 			//get sensor record based on sensor id
@@ -750,7 +762,7 @@ public class Database {
 					}else if(me.getKey().equals("ut")){
 						dbmap.put(8,me.getValue().toString());
 					}else{
-						continue;
+						dbmap.put(9,me.getValue().toString());
 					}
 				} 
 				
@@ -763,13 +775,23 @@ public class Database {
 				while(iter.hasNext()) {
 					Map.Entry mentry = (Map.Entry)iter.next();
 					// Submit a query, creating a ResultSet object
-					statement
-							.executeUpdate("INSERT INTO data VALUES "
-											+ "('" + id 
-											+ "', '" + data.getUtimestamp()
-											+ "', " + Integer.parseInt(mentry.getKey().toString())
-											+ ", '" + mentry.getValue().toString()
-											+ "')");
+					if(data.getUtimestamp()!=null){
+						statement
+								.executeUpdate("INSERT INTO data VALUES "
+												+ "('" + id 
+												+ "', '" + data.getUtimestamp()
+												+ "', " + Integer.parseInt(mentry.getKey().toString())
+												+ ", '" + mentry.getValue().toString()
+												+ "')");
+					}else{
+						statement
+								.executeUpdate("INSERT INTO data VALUES "
+												+ "('" + id 
+												+ "', DEFAULT" 
+												+ ", " + Integer.parseInt(mentry.getKey().toString())
+												+ ", '" + mentry.getValue().toString()
+												+ "')");
+					}
 				}
 				
 	

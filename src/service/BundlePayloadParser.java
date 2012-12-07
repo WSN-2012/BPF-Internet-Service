@@ -56,8 +56,6 @@ public class BundlePayloadParser {
 						System.out.println(e.toString());
 						return;
 					}
-				}else{//else use current date
-					utimestamp = dateFormat.parse(new Date().toString());
 				}
 				
 				//parse unix time and store it to map object
@@ -110,12 +108,16 @@ public class BundlePayloadParser {
 				}
 				
 				if(mdata.isEmpty()){
-					mdata.put("general", lines[i].toString());
+					mdata.put("general", lines[i]);
 				}
 				
-				data = new Data(utimestamp, "garden", mdata);
+				if(id!="No id"){
+					data = new Data(utimestamp, "garden", mdata);
+				}else{
+					data = new Data(utimestamp, "No sensor name", mdata);
+				}
 				gateway = SQLQueries.setGateway(gatewayName);
-				sensor = SQLQueries.setSensor(id,gatewayName);
+				sensor = SQLQueries.setSensor(id, data.getSensorName(),gatewayName);
 				SQLQueries.setData(sensor.getId(), data);
 			}catch(Exception e){
 				System.out.println(e);
@@ -128,7 +130,7 @@ public class BundlePayloadParser {
 	/*public static void main(String args[]) {
 		RandomAccessFile f = null;
 		try {
-			f = new RandomAccessFile("src/service/sensors_100.dat", "r");
+			f = new RandomAccessFile("src/service/general.dat", "r");
 			byte[] buffer = new byte[(int) f.length()];
 			f.read(buffer);
 			BundlePayloadParser b = new BundlePayloadParser(buffer);
