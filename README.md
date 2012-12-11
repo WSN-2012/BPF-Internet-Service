@@ -1,4 +1,4 @@
-# BPF (Bundle Protocol Framework) Base Service
+# Base Service for the BPF (Bundle Protocol Framework) 
 
 ## General
 ### About
