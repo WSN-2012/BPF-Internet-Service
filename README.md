@@ -13,6 +13,13 @@ This project is a service implementing the BPF and providing the functionalities
 ### Prerequisites
 You will need to have ant to compile this in an easy way. To get ant look into how to install it on your platform.
 
+The project is also using a database in order to store bundle payload. The database folder is the same with the one in Website project available in WSN-2012 repository.
+In this project we used postreSQL vesrion 9.1 to create our database schema. Any database can be used if appropriate changes are commited in the Database.java and SQLQueries.java files.
+To download and install postgreSQL you can go to [PostgreSQL](http://www.postgresql.org/download/) and download the appropriate source. Then follow the [instructions](http://www.postgresql.org/docs/9.1/interactive/index.html). To load the database schema you have to do the following from command line:
+* `psql postgres`(connect to database as postgres user)
+* `CREATE DATABASE "DatabaseName";` (create database)
+* `psql databasename < data_base_dump` (import DB from dump file *outside the psql command line*. The projects database dump file is stored in the database folder. **Notice:** database should be created before importing the dump file)
+
 ### Building
 The BPF is included as a submodule and it is built automatically when building the service. It is possible to configure several settings in the configuration file.
 Follow the below steps to build service and BPF.
