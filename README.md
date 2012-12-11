@@ -19,6 +19,8 @@ To download and install postgreSQL you can go to [PostgreSQL](http://www.postgre
 * `psql postgres`(connect to database as postgres user)
 * `CREATE DATABASE "DatabaseName";` (create database)
 * `psql databasename < data_base_dump` (import DB from dump file *outside the psql command line*. The projects database dump file is stored in the database folder. **Notice:** database should be created before importing the dump file)
+**Notice** 
+You need to Insert your database specifications in the [src/database/SQLQueries.java](https://github.com/WSN-2012/Website/blob/master/src/database/SQLQueries.java) file where todo comments appear.
 
 ### Building
 The BPF is included as a submodule and it is built automatically when building the service. It is possible to configure several settings in the configuration file.
