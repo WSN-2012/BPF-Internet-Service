@@ -43,3 +43,4 @@ To be able to monitor the service and automatically restarting it, we suggest us
 
 1.  Install monit on your system. E.g: `sudo apt-get install monit`
 2.  Copy the monitor script to the monit path in your system: E.g: `cp linux-scripts/bpf-service.monit /etc/monit/conf.d/bpf-service`
+3.  Restart monit: `/etc/init.d/monit restart`
