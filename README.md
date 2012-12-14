@@ -1,4 +1,4 @@
-# Base Service for the BPF (Bundle Protocol Framework) 
+# Internet Service for the BPF (Bundle Protocol Framework) 
 
 ## General
 ### About
