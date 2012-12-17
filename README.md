@@ -14,12 +14,10 @@ You will need to have ant to compile this in an easy way. To get ant look into h
 The project is also using a database in order to store bundle payload. The database folder is the same with the one in Website project available in WSN-2012 repository.
 In this project we used postreSQL vesrion 9.1 to create our database schema. Any database can be used if appropriate changes are commited in the Database.java and SQLQueries.java files.
 To download and install postgreSQL you can go to [PostgreSQL](http://www.postgresql.org/download/) and download the appropriate source. Then follow the [installation instructions](http://www.postgresql.org/docs/9.1/interactive/index.html). To load the database schema you have to do the following from command line:
-* `psql postgres`(connect to database as postgres user)
-* `CREATE DATABASE "DatabaseName";` (create database)
-* `psql databasename < data_base_dump` (import DB from dump file *outside the psql command line*. The projects database dump file is stored in the database folder. **Notice:** database should be created before importing the dump file)
-
-**Notice** 
-You need to Insert your database specifications in the [src/database/SQLQueries.java](https://github.com/WSN-2012/Website/blob/master/src/database/SQLQueries.java) file where todo comments appear.
+1.	`psql postgres`(connect to database as postgres user)
+2.	`CREATE DATABASE "DatabaseName";` (create database)
+3.	`psql databasename < data_base_dump` (import DB from dump file *outside the psql command line*. The projects database dump file is stored in the database folder. **Notice:** database should be created before importing the dump file) 
+4.	Insert your database specifications in the [src/database/SQLQueries.java](https://github.com/WSN-2012/Website/blob/master/src/database/SQLQueries.java) file where todo comments appear.
 
 ### Building
 The BPF is included as a submodule and it is built automatically when building the service. It is possible to configure several settings in the configuration file.
@@ -31,15 +29,22 @@ Follow the below steps to build service and BPF.
 4.  `ant`
 
 ### Start/Stop script
+To just run the application after building it:
+
+1.  Run `./run.sh`
+
 To install a start/stop script, follow the below steps:
 
 1.  Copy the start/stop script: `cp linux-scripts/bpf-service /etc/init.d/bpf-service`
 2.  Start it: `/etc/init.d/bpf-service start`
 3.  Stop it: `/etc/init.d/bpf-service stop`
 
-### Monitoring (automatic restarting)
-To be able to monitor the service and automatically restarting it, we suggest using monit. Follow the below steps to set it up:
+### Monitoring
+To be able to monitor the service and automatically restarting it, we suggest using monit. To do this you will need to have set up the start/stop scripts as shown above. Follow the below steps to set the monitoring up:
 
 1.  Install monit on your system. E.g: `sudo apt-get install monit`
 2.  Copy the monitor script to the monit path in your system: E.g: `cp linux-scripts/bpf-service.monit /etc/monit/conf.d/bpf-service`
 3.  Restart monit: `/etc/init.d/monit restart`
+
+### Start at boot
+Do not forget to add the service to start at boot. E.g: `sudo update–rc.d bpf-service defaults`
