@@ -23,6 +23,9 @@ Follow the below steps to build service and BPF.
 4.  `ant`
 
 ### Start/Stop script
+To just run the application after building it:
+1.  Run `./run.sh`
+
 To install a start/stop script, follow the below steps:
 
 1.  Copy the start/stop script: `cp linux-scripts/bpf-service /etc/init.d/bpf-service`
@@ -30,7 +33,7 @@ To install a start/stop script, follow the below steps:
 3.  Stop it: `/etc/init.d/bpf-service stop`
 
 ### Monitoring (automatic restarting)
-To be able to monitor the service and automatically restarting it, we suggest using monit. Follow the below steps to set it up:
+To be able to monitor the service and automatically restarting it, we suggest using monit. To do this you will need to have set up the start/stop scripts as shown above. Follow the below steps to set the monitoring up:
 
 1.  Install monit on your system. E.g: `sudo apt-get install monit`
 2.  Copy the monitor script to the monit path in your system: E.g: `cp linux-scripts/bpf-service.monit /etc/monit/conf.d/bpf-service`
