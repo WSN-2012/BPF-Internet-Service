@@ -23,8 +23,8 @@ To download and install postgreSQL you can go to [PostgreSQL](http://www.postgre
 The BPF is included as a submodule and it is built automatically when building the service. It is possible to configure several settings in the configuration file.
 Follow the below steps to build service and BPF.
 
-1.  `git clone --recursive https://github.com/WSN-2012/BPF-Base-Service.git`
-2.  `cd BPF-Base-Service`
+1.  `git clone --recursive https://github.com/WSN-2012/BPF-Internet-Service.git`
+2.  `cd BPF-Internet-Service`
 3.  `vi config/dtn.config.xml`
 4.  `ant`
 
